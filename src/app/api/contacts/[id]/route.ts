@@ -4,10 +4,10 @@ import Contact from "@/models/Contact";
 import mongoose from "mongoose";
 
 // ✅ Mark as Read
-export async function PUT(_req: Request, { params }: { params: { id: string } }) {
+export async function PUT(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
-    const { id } = params;
+    const { id } = await params; // ✅ Await params
     if (!mongoose.isValidObjectId(id))
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
@@ -20,10 +20,10 @@ export async function PUT(_req: Request, { params }: { params: { id: string } })
 }
 
 // ✅ Delete Message
-export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectDB();
-    const { id } = params;
+    const { id } = await params; // ✅ Await params
     if (!mongoose.isValidObjectId(id))
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
