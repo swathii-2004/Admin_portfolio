@@ -1,10 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "../../../lib/mongodb";
 import Contact from "@/models/Contact";
 import mongoose from "mongoose";
+import { checkAuth } from "../../../lib/auth";
 
-// ✅ Mark as Read
-export async function PUT(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+// ✅ Mark as Read (protected)
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     await connectDB();
     const { id } = await params; // ✅ Await params
@@ -19,8 +23,11 @@ export async function PUT(_req: Request, { params }: { params: Promise<{ id: str
   }
 }
 
-// ✅ Delete Message
-export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+// ✅ Delete Message (protected)
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     await connectDB();
     const { id } = await params; // ✅ Await params

@@ -1,9 +1,10 @@
 // admin-project/src/app/api/projects/[id]/route.ts
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "../../../lib/mongodb";
 import Project from "@/models/Project";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
+import { checkAuth } from "../../../lib/auth";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -11,7 +12,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// GET /api/projects/:id - Fetch single project
+// GET /api/projects/:id - Fetch single project (public)
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -36,11 +37,14 @@ export async function GET(
   }
 }
 
-// PUT /api/projects/:id - Update project
+// PUT /api/projects/:id - Update project (protected)
 export async function PUT(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     await connectDB();
     const { id } = await params;
@@ -105,11 +109,14 @@ export async function PUT(
   }
 }
 
-// DELETE /api/projects/:id - Delete project
+// DELETE /api/projects/:id - Delete project (protected)
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     await connectDB();
     const { id } = await params;

@@ -1,9 +1,10 @@
 
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "../../lib/mongodb";
 import Project from "@/models/Project";
+import { checkAuth } from "../../lib/auth";
 
-// GET /api/projects - Fetch all projects
+// GET /api/projects - Fetch all projects (public for dashboard)
 export async function GET() {
   try {
     await connectDB();
@@ -18,8 +19,11 @@ export async function GET() {
   }
 }
 
-// POST /api/projects - Create a new project
-export async function POST(req: Request) {
+// POST /api/projects - Create a new project (protected)
+export async function POST(req: NextRequest) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     await connectDB();
     const body = await req.json();

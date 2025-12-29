@@ -1,7 +1,8 @@
 // src/app/api/skills/route.ts
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "../../lib/mongodb";
 import Skill from "@/models/Skill";
+import { checkAuth } from "../../lib/auth";
 
 export async function GET() {
   try {
@@ -14,7 +15,10 @@ export async function GET() {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     await connectDB();
     const body = await req.json();

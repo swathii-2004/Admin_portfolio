@@ -42,7 +42,9 @@ export default function DashboardHome() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-cyan-400 mb-6">Dashboard Overview</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-cyan-400">Dashboard Overview</h1>
+      </div>
 
       {loading ? (
         <p className="text-gray-400">Loading stats...</p>
@@ -67,10 +69,9 @@ export default function DashboardHome() {
         Recent Messages
       </h2>
 
-      {/* Placeholder for now */}
       <div className="bg-gray-900 border border-gray-800 p-4 rounded-lg">
         <p className="text-gray-400">
-          Recent messages will appear here (we’ll build this soon).
+          Recent messages will appear here (we'll build this soon).
         </p>
       </div>
     </div>

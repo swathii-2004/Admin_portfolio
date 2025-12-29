@@ -1,6 +1,7 @@
 // admin-project/src/app/api/skills/upload/route.ts
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
+import { checkAuth } from "../../../lib/auth";
 
 // Configure Cloudinary
 cloudinary.config({
@@ -9,7 +10,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;

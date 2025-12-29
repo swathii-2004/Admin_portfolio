@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { Menu, X, LogOut } from "lucide-react";
 
 export default function ResponsiveLayoutClient({
   children,
@@ -9,6 +10,11 @@ export default function ResponsiveLayoutClient({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Don't show sidebar on login page
+  const isLoginPage = pathname === "/login";
 
   const navLinks = [
     { href: "/", label: "Dashboard" },
@@ -17,6 +23,23 @@ export default function ResponsiveLayoutClient({
     { href: "/skills", label: "Skills" },
     { href: "/messages", label: "Messages" },
   ];
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      if (res.ok) {
+        router.push("/login");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  // If on login page, just show children without sidebar
+  if (isLoginPage) {
+    return children;
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-950">
@@ -48,24 +71,36 @@ export default function ResponsiveLayoutClient({
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0
+          flex flex-col
         `}
       >
-        <h1 className="text-2xl font-bold text-cyan-400 mb-8 text-center hidden md:block">
-          Admin Panel
-        </h1>
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold text-cyan-400 mb-8 text-center hidden md:block">
+            Admin Panel
+          </h1>
 
-        <nav className="space-y-2 mt-16 md:mt-0">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setSidebarOpen(false)}
-              className="block px-3 py-2 rounded hover:bg-cyan-500/10 hover:text-cyan-400 transition"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
+          <nav className="space-y-2 mt-16 md:mt-0">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setSidebarOpen(false)}
+                className="block px-3 py-2 rounded hover:bg-cyan-500/10 hover:text-cyan-400 transition"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-semibold mt-4"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
       </aside>
 
       {/* Main Content */}

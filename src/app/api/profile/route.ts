@@ -1,8 +1,9 @@
 // admin-project/src/app/api/profile/route.ts
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "../../lib/mongodb"; // keep your existing path
 import Profile from "@/models/Profile";
 import { v2 as cloudinary } from "cloudinary";
+import { checkAuth } from "../../lib/auth";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,7 +11,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// ✅ GET: Fetch single profile
+// ✅ GET: Fetch single profile (public - no auth needed)
 export async function GET() {
   try {
     await connectDB();
@@ -25,8 +26,11 @@ export async function GET() {
   }
 }
 
-// ✅ POST: Create new profile
-export async function POST(req: Request) {
+// ✅ POST: Create new profile (protected)
+export async function POST(req: NextRequest) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     await connectDB();
     const data = await req.json();
@@ -59,8 +63,11 @@ export async function POST(req: Request) {
   }
 }
 
-// ✅ PUT: Update existing profile (partial update)
-export async function PUT(req: Request) {
+// ✅ PUT: Update existing profile (protected)
+export async function PUT(req: NextRequest) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
+
   try {
     await connectDB();
     const data = await req.json();

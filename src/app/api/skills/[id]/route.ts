@@ -1,9 +1,10 @@
 // admin-project/src/app/api/skills/[id]/route.ts
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectDB } from "../../../lib/mongodb";
 import Skill from "@/models/Skill";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
+import { checkAuth } from "../../../lib/auth";
 
 // Configure Cloudinary
 cloudinary.config({
@@ -13,9 +14,11 @@ cloudinary.config({
 });
 
 export async function PUT(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> } // ✅ Changed to Promise
 ) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
   try {
     await connectDB();
     const { id } = await params; // ✅ Await params
@@ -62,9 +65,11 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> } // ✅ Changed to Promise
 ) {
+  const authError = await checkAuth(req);
+  if (authError) return authError;
   try {
     await connectDB();
     const { id } = await params; // ✅ Await params

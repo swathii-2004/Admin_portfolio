@@ -2,8 +2,8 @@ import "./globals.css";
 import ResponsiveLayoutClient from "./ResponsiveLayoutClient";
 
 export const metadata = {
-  title: "Portfolio Admin Dashboard",
-  description: "Manage your portfolio content locally",
+  title: "swathi7_admin",
+  description: "admin panel for swathi7",
 };
 
 export default function RootLayout({
